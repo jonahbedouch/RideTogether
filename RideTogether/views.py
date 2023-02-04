@@ -3,6 +3,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import JsonResponse, HttpResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework import permissions
+from .serializers import *
 
 from .models import *
 
@@ -14,6 +19,47 @@ def latlong_to_bucket(lat, long):
     return lat, long
 
 # Create your views here.
+
+class test_api_view(APIView):
+    def post(self, request, *args, **kwargs):
+        data = {
+            'message': "hello jonah"
+        }
+        serializer = TestSerializer(data=data)
+        if serializer.is_valid():
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class login_api_view(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, *args, **kwargs):
+        pass
+    def post(self, request, *args, **kwargs):
+        pass
+
+class register_api_view(APIView):
+    def get(self, request, *args, **kwargs):
+        pass
+    def post(self, request, *args, **kwargs):
+        username = request.POST["username"]
+        email = request.POST["email"]
+        password = request.POST["password"]
+        first_name = request.POST["first_name"]
+        last_name = request.POST["last_name"]
+
+        # Attempt to create new user
+        try:
+            user = User.objects.create_user(username, email, password, first_name=first_name, last_name=last_name)
+            user.save()
+        except IntegrityError as e:
+            print(e)
+            return Response(serializer.errors)
+        login(request, user)
+        userid = user.id
+        return JsonResponse({
+            "status": 200,
+            "userid": userid
+        })
 
 
 def index(request):
