@@ -1,0 +1,12 @@
+{
+    "short_name": "RideTogether",
+    "name": "RideTogether",
+    "start_url": "/",
+    "icons": [],
+    "background_color": "#2CA58D",
+    "display": "standalone",
+    "scope": "/",
+    "theme_color": "#2CA58D",
+    "shortcuts": [],
+    "description": "RideTogether is an app designed to help make it easier to find partners to carpool with for commutes or trips."
+}
