@@ -96,7 +96,8 @@ def userdata(request):
             "status": 200,
             "email": user.email,
             "username": user.username,
-            "first_name": user.username
+            "first_name": user.username,
+            "last_name": user.last_name
         })
 
 def test(request):
