@@ -8,5 +8,8 @@
     "scope": "/",
     "theme_color": "#2CA58D",
     "shortcuts": [],
+    "permissions": [
+        "geolocation"
+    ],
     "description": "RideTogether is an app designed to help make it easier to find partners to carpool with for commutes or trips."
 }
