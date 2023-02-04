@@ -2,7 +2,7 @@ import json
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 from .models import *
 
@@ -102,6 +102,8 @@ def userdata(request):
 def test(request):
     if request.method == "POST":
         return JsonResponse({"status": 200})
+    if request.method == "GET":
+        return HttpResponse("Hello")
 
 
 
