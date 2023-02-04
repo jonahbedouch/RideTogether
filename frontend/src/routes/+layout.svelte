@@ -1,7 +1,8 @@
 <script>
 	import 'mapbox-gl/dist/mapbox-gl.css';
-	import { onMount } from 'svelte';
 	import '../app.css';
+	import { onMount } from 'svelte';
+	import Sidebar from '../components/Sidebar.svelte';
 	import { locationStore } from '../stores/location';
 
     onMount(() => {
@@ -12,4 +13,5 @@
     })
 </script>
 
+<Sidebar></Sidebar>
 <slot />
