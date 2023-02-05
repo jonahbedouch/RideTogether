@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import X from '../icons/X.svelte';
 	import { backendStore } from '../stores/backend';
 	let drive: boolean;
@@ -10,6 +11,11 @@
     let close = () => {
         backendStore.toggleDrive();
     }
+
+    let submitEvent = () => {
+        
+    }
+
 </script>
 
 <div class="flex flex-row text-baby-powder-50">
@@ -23,13 +29,18 @@
             </button>
             <p class="transition-none absolute self-center text-4xl">Drive</p>
         </div>
-        <form action="" class="flex flex-col w-5/6 mx-auto">
-            <label for="driveStartDestination">Start Destination</label>
-            <input class="bg-oxford-blue-600 border-violet-red-700 border-2 p-2 mb-2 rounded-xl" id="driveStartDestination" name="driveStartDestination" type="text" />
-            <label for="driveEndDestination">End Destination</label>
-            <input class="bg-oxford-blue-600 border-violet-red-700 border-2 p-2 mb-2 rounded-xl" id="driveEndDestination" name="driveEndDestination" type="text" />
+        <form action="/app?/drive" on:submit|preventDefault method='POST' class="flex flex-col w-5/6 mx-auto" use:enhance={({form, data, cancel}) => {
+            console.log(form, data, cancel);
+            return async ({result}) => {
+                console.log(result);
+            }
+        }}>
+            <label for="driveOrigin">Start Destination</label>
+            <input class="bg-oxford-blue-600 border-violet-red-700 border-2 p-2 mb-2 rounded-xl" id="driveOrigin" name="driveOrigin" type="text" />
+            <label for="driveDest">End Destination</label>
+            <input class="bg-oxford-blue-600 border-violet-red-700 border-2 p-2 mb-2 rounded-xl" id="driveDest" name="driveDest" type="text" />
             <label for="maxPassengers">Number of Open Seats</label>
-            <input class="bg-oxford-blue-600 border-violet-red-700 border-2 p-2 mb-6 rounded-xl" type="number" />
+            <input class="bg-oxford-blue-600 border-violet-red-700 border-2 p-2 mb-6 rounded-xl" type="number" id="maxPassengers" name="maxPassengers" />
             <button class="bg-oxford-blue-600 border-violet-red-700 border-2 p-2 rounded-xl text-xl">Start</button>
         </form>
     </div>
