@@ -20,9 +20,10 @@ class Message(models.Model):
     chat = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='channel')
 
 class Session(models.Model):
+    driver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='driver')
     passengers_max = models.IntegerField()
     start_dest = models.JSONField()
     end_dest = models.JSONField()
     route = models.JSONField()
     passengers = models.ManyToManyField(User)
-    timestamp = models.DateTimeField()
+    timestamp = models.IntegerField()
