@@ -29,11 +29,10 @@ class login_api_view(APIView):
         user = authenticate(request, username=username, password=password)
 
         uinfo = UserSerializer(user)
-        if user is not None:
-            login(request, user)
-            return Response(uinfo.data)
-        else:
+        if user is None:
             return HttpResponse(status=400)
+        login(request, user)
+        return Response(uinfo.data)
 
 class register_api_view(APIView):
     def post(self, request, *args, **kwargs):
