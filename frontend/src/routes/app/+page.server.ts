@@ -11,7 +11,7 @@ export const actions: Actions = {
         const token = event.cookies.get('authToken');
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/ride/start/', {
+            const response = await fetch('https://kyle518.pythonanywhere.com/ride//start/', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -31,7 +31,7 @@ export const actions: Actions = {
             }
 
             let x = await response.json();
-            
+
             return x;
         }
         catch {
@@ -49,7 +49,7 @@ export const actions: Actions = {
 
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/ride/find/', {
+            const response = await fetch('https://kyle518.pythonanywhere.com/ride/find/', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

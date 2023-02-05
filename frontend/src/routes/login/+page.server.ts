@@ -7,7 +7,7 @@ export const actions: Actions = {
     const username = data.get('username');
     const password = data.get('password');
 
-    const response = await event.fetch('http://127.0.0.1:8000/ride/api-token-auth/', {
+    const response = await event.fetch('https://kyle518.pythonanywhere.com/ride/api-token-auth/', {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

@@ -19,7 +19,7 @@ export const actions: Actions = {
       password
   }))
 
-    const response = await fetch('http://127.0.0.1:8000/ride/register/', {
+    const response = await fetch('https://kyle518.pythonanywhere.com/ride/register/', {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -33,7 +33,7 @@ export const actions: Actions = {
       })
     })
 
-    const tokenReponse = await fetch('http://127.0.0.1:8000/ride/api-token-auth/', {
+    const tokenReponse = await fetch('https://kyle518.pythonanywhere.com/ride/api-token-auth/', {
       method: 'POST',
       headers: {
         "Content-Type": "application/json"

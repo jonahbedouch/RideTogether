@@ -36,7 +36,7 @@
             return async ({result}) => {
                 console.log(result);
                 if ('data' in result && result.data) {
-                    console.log(result.data);
+                    console.log(result);
                     driveStore.replace(true, result.data.id, result.data.driver, result.data.passengers_max, result.data.start_dest, result.data.end_dest, result.data.original_route, result.data.passengers, result.data.timestamp);
                     backendStore.toggleDrive();
                     goto('/app/drive');
