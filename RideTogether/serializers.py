@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'miles_traveled', 'sessions_hosted', 'sessions_joined', 'driver_rating', 'passenger_rating']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'phone_number','miles_traveled', 'sessions_hosted', 'sessions_joined', 'driver_rating', 'passenger_rating']
 
 class UIDSerializier(serializers.Serializer):
     user_id = serializers.IntegerField()
@@ -17,6 +17,12 @@ class SessionSerializer(serializers.ModelSerializer):
     passengers = UserSerializer(read_only=True, many=True)
     class Meta:
         model = Session
-        fields = ['driver', 'passengers_max', 'start_dest', 'end_dest', 'route', 'passengers', 'timestamp']
+        fields = ['id', 'driver', 'passengers_max', 'start_dest', 'end_dest', 'original_route', 'route', 'passengers', 'timestamp']
+
+class PublicSessionSerializer(serializers.ModelSerializer):
+    passengers = UserSerializer(read_only=True, many=True)
+    class Meta:
+        model = Session
+        fields = ['id', 'driver', 'passengers_max', 'start_dest', 'end_dest', 'original_route', 'passengers', 'timestamp']
 
 
