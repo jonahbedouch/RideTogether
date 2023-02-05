@@ -18,7 +18,9 @@ export const actions: Actions = {
     })
 
     const responseData = await response.json();
+    
+    console.log(responseData);
 
-    sessionStorage.setItem('test', JSON.stringify(responseData));
+    event.cookies.set('id', responseData.id);
   }
 };
