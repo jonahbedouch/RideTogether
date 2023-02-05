@@ -131,9 +131,9 @@ class session_find_api_view(APIView):
         long2, lat2 = destresponse['longitude'], destresponse['latitude']
         timestart = int(request.data.get('timestart')) # epoch seconds
         peopleamt = int(request.data.get('people_amt'))
+        print(timestart, peopleamt)
         print(Session.objects.all())
         possible = Session.objects.exclude(passengers_max=0)
-        print(possible)
         origin = latlong_to_bucket(lat1, long1)
         possible = [x for x in possible if (timestart - 3600 < x.timestamp < timestart + 3600) and (x.passengers_max-peopleamt >=0)]
         dest = latlong_to_bucket(lat2, long2)
