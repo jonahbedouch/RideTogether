@@ -65,8 +65,8 @@ class stalk_api_view(APIView):
     def post(self, request):
         uid = int(request.data.get('user_id'))
         print(request.user.id, uid)
-        if request.user.id != uid:
-            return HttpResponse(status=401)
+        #if request.user.id != uid:
+        #    return HttpResponse(status=401)
         try:
             user = User.objects.get(id=uid)
             return Response(UserSerializer(user).data)
@@ -131,6 +131,7 @@ class session_find_api_view(APIView):
         long2, lat2 = destresponse['longitude'], destresponse['latitude']
         timestart = int(request.data.get('timestart')) # epoch seconds
         peopleamt = int(request.data.get('people_amt'))
+        print(Session.objects.all())
         possible = Session.objects.exclude(passengers_max=0)
         origin = latlong_to_bucket(lat1, long1)
         possible = [x for x in possible if (timestart - 3600 < x.timestamp < timestart + 3600) and (x.passengers_max-peopleamt >=0)]
