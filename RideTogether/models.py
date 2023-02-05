@@ -9,16 +9,7 @@ class User(AbstractUser):
     sessions_joined = models.IntegerField(default=0)
     driver_rating = models.DecimalField(default=0, decimal_places=5, max_digits=10)
     passenger_rating = models.DecimalField(default=0, decimal_places=5, max_digits=10)
-    phone_number = models.CharField(default="", max_length=20)
-
-class Conversation(models.Model):
-    users = models.ManyToManyField(User)
-
-class Message(models.Model):
-    timestamp = models.DateTimeField(auto_now_add=True)
-    message = models.TextField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author')
-    chat = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='channel')
+    phone_number = models.CharField(default="", max_length=20, blank=True, null=True)
 
 class Session(models.Model):
     driver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='driver')
@@ -27,7 +18,7 @@ class Session(models.Model):
     end_dest = models.JSONField()
     original_route = models.JSONField()
     route = models.JSONField()
-    passengers = models.ManyToManyField(User)
+    passengers = models.JSONField()
     timestamp = models.IntegerField()
-    joinqueue = models.ManyToManyField(User, related_name="waitlist")
+    joinqueue = models.JSONField()
 
