@@ -64,6 +64,7 @@ class logout_api_view(APIView):
 class stalk_api_view(APIView):
     def post(self, request):
         uid = int(request.data.get('user_id'))
+        print(request.user.id, uid)
         if request.user.id != uid:
             return HttpResponse(status=401)
         try:
