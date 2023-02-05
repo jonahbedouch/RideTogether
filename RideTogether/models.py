@@ -9,6 +9,7 @@ class User(AbstractUser):
     sessions_joined = models.IntegerField(default=0)
     driver_rating = models.DecimalField(default=0, decimal_places=5, max_digits=10)
     passenger_rating = models.DecimalField(default=0, decimal_places=5, max_digits=10)
+    phone_number = models.CharField(default="", max_length=20)
 
 class Conversation(models.Model):
     users = models.ManyToManyField(User)
@@ -24,6 +25,9 @@ class Session(models.Model):
     passengers_max = models.IntegerField()
     start_dest = models.JSONField()
     end_dest = models.JSONField()
+    original_route = models.JSONField()
     route = models.JSONField()
     passengers = models.ManyToManyField(User)
     timestamp = models.IntegerField()
+    joinqueue = models.ManyToManyField(User, related_name="waitlist")
+

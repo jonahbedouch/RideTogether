@@ -18,7 +18,7 @@ def latlong_to_bucket(lat, long):
     long -= -122.087
     lat = int(lat//0.0075)
     long = int(long//0.0075)
-    return lat, long
+    return [lat, long]
 
 # Create your views here.
 
@@ -41,7 +41,8 @@ class register_api_view(APIView):
             "email": request.data.get('email'),
             "password": request.data.get('password'),
             "first_name": request.data.get('first_name'),
-            "last_name": request.data.get('last_name')
+            "last_name": request.data.get("last_name"),
+            "phone_number": request.data.get('phone_number')
         }
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
@@ -77,8 +78,13 @@ class session_start_api_view(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request):
         driver = request.user.id
-        long1, lat1 = [float(x) for x in request.data.get('origin')]
-        long2, lat2 = [float(x) for x in request.data.get('dest')]
+        origin = request.data.get('origin')
+        dest = request.data.get('dest')
+        key = "de8151350cacbf98bdcabeb713955ca0"
+        originresponse = requests.get(f"http://api.positionstack.com/v1/forward?access_key={key}&query={'%20'.join(origin.split())}").json()['data'][0]
+        destresponse = requests.get(f"http://api.positionstack.com/v1/forward?access_key={key}&query={'%20'.join(dest.split())}").json()['data'][0]
+        long1, lat1 = originresponse['longitude'], originresponse['latitude']
+        long2, lat2 = destresponse['longitude'], destresponse['latitude']
         timestart = int(request.data.get('timestart')) # epoch seconds
         passengers_max = int(request.data.get('passengers_max'))
         if not (36.96 < lat1 < 37.017) or not (-122.087 < long1 < -121.93):
@@ -99,6 +105,7 @@ class session_start_api_view(APIView):
             "passengers_max": passengers_max, 
             "start_dest": [lat1, long1],
             "end_dest": [lat2, long2],
+            "original_route": nodes,
             "route": route,
             "passengers": [],
             "timestamp": timestart,
@@ -114,8 +121,13 @@ class session_start_api_view(APIView):
 class session_find_api_view(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request):
-        long1, lat1 = [float(x) for x in request.data.get('origin')]
-        long2, lat2 = [float(x) for x in request.data.get('dest')]
+        origin = request.data.get('origin')
+        dest = request.data.get('dest')
+        key = "de8151350cacbf98bdcabeb713955ca0"
+        originresponse = requests.get(f"http://api.positionstack.com/v1/forward?access_key={key}&query={'%20'.join(origin.split())}").json()['data'][0]
+        destresponse = requests.get(f"http://api.positionstack.com/v1/forward?access_key={key}&query={'%20'.join(dest.split())}").json()['data'][0]
+        long1, lat1 = originresponse['longitude'], originresponse['latitude']
+        long2, lat2 = destresponse['longitude'], destresponse['latitude']
         timestart = int(request.data.get('timestart')) # epoch seconds
         peopleamt = int(request.data.get('people_amt'))
         possible = Session.objects.exclude(passengers_max=0)
@@ -124,21 +136,27 @@ class session_find_api_view(APIView):
         dest = latlong_to_bucket(lat2, long2)
         print(possible)
         print(origin, dest)
-        print(i.route)
         res = []
         for i in possible:
             try:
-                print(i.route)
                 j = i.route.index(origin)
-                print(j)
                 if dest in i.route[j+1:]:
                     res.append(i)
             except ValueError:
                 pass
-        print(res)
+        res = [PublicSessionSerializer(x).data for x in res]
         return Response({"sessions": res})
 
-
+class session_join_api_view(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request):
+        passenger = request.user
+        session_id = int(request.data.get('session_id'))
+        session = Session.objects.get(id=session_id)
+        session.passengers.add(passenger)
+        session.passengers_max -= 1
+        return HttpResponse(status=200)
+    
 
 class session_end_api_view(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -148,11 +166,6 @@ class session_end_api_view(APIView):
 
         
 
-def trip_details(request):
-    pass
-
-def trip_findlocal(request):
-    pass
 
 
 
