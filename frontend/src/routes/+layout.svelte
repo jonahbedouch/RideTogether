@@ -4,6 +4,8 @@
 	import { onMount } from 'svelte';
 	import Sidebar from '../components/Sidebar.svelte';
 	import { locationStore } from '../stores/location';
+	import Drive from '../components/Drive.svelte';
+	import Ride from '../components/Ride.svelte';
 
     onMount(() => {
         if (navigator.geolocation) {
@@ -14,4 +16,6 @@
 </script>
 
 <Sidebar></Sidebar>
+<Drive></Drive>
+<Ride></Ride>
 <slot />
