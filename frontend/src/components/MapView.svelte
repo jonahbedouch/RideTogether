@@ -1,7 +1,13 @@
 <script lang="ts">
-	import mapboxgl from 'mapbox-gl'; // or "const mapboxgl = require('mapbox-gl');"
+	import mapboxgl, { Marker, type LngLatLike } from 'mapbox-gl'; // or "const mapboxgl = require('mapbox-gl');"
 	import { onMount } from 'svelte';
+	import { driveStore } from '../stores/drive';
 	import { locationStore } from '../stores/location';
+
+    let marker1: Marker;
+    let marker2: Marker;
+
+	export let drive = false;
 
 	mapboxgl.accessToken =
 		'pk.eyJ1Ijoiam9uYWhiZWRvdWNoIiwiYSI6ImNsZHBoNXpxaTBsZWMzeG52aDduaG9hNWEifQ.TGxSVcKU9aN2ZgdNGfThkA';
@@ -26,10 +32,60 @@
 			showUserHeading: true
 		});
 		map.addControl(geolocate);
-        
-        map.on('load', () => {
-            geolocate.trigger();
-        })
+
+		map.on('load', () => {
+			geolocate.trigger();
+
+			if (drive) {
+				driveStore.subscribe((value) => {
+                    if (map.getLayer('route')) {
+                        map.removeLayer('route');
+                    }
+
+                    if (map.getSource('route')) {
+                        map.removeLayer('route');
+                    }
+
+                    if (marker1) {
+                        marker1.remove();
+                    }
+
+                    if (marker2) {
+                        marker2.remove();
+                    }
+
+					map.addLayer({
+						id: 'route',
+						type: 'line',
+						source: {
+							type: 'geojson',
+							data: {
+								type: 'Feature',
+								properties: {},
+								geometry: {
+									type: 'LineString',
+									coordinates: value.original_route
+								}
+							}
+						},
+						layout: {
+							'line-join': 'round',
+							'line-cap': 'round'
+						},
+						paint: {
+							'line-color': '#3b4f68',
+							'line-width': 8
+						}
+					});
+
+					marker1 = new mapboxgl.Marker({ color: '#84bc9c', rotation: 0 }).setLngLat([value.start_dest[1], value.start_dest[0]]).addTo(map);
+
+					marker2 = new mapboxgl.Marker({ color: '#84bc9c', rotation: 0 })
+						.setLngLat([value.end_dest[1], value.end_dest[0]])
+						.addTo(map);
+				});
+			}
+		});
 	});
 </script>
 
