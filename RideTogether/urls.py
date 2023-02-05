@@ -12,6 +12,6 @@ urlpatterns = [
     path("api-token-auth/", obtain_auth_token, name='api_token_auth'),
     path("join/", views.session_join_api_view.as_view(), name="join"),
     path("check-requests/", views.check_waitlist_api_view.as_view(), name="check-request"),
-    
-
+    path("drop/", views.waitlist_drop_api_view.as_view(), name="drop"),
+    path("remove/", views.session_end_api_view.as_view(), name='remove')
 ]
