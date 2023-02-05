@@ -7,7 +7,6 @@
 		sidebar = value.sidebar;
 	});
 
-    fetch('http://localhost:5173/api/logout', { method: 'POST', 'body': JSON.stringify({a: 1, b: 2})})
 </script>
 
 <div
