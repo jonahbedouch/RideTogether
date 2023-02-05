@@ -53,7 +53,7 @@ class register_api_view(APIView):
                 print(e)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             login(request, user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class logout_api_view(APIView):
@@ -63,7 +63,7 @@ class logout_api_view(APIView):
 
 class stalk_api_view(APIView):
     def post(self, request):
-        uid = request.data.get('user_id')
+        uid = int(request.data.get('user_id'))
         if request.user.id != uid:
             return HttpResponse(status=401)
         try:
@@ -80,7 +80,7 @@ class session_start_api_view(APIView):
         long1, lat1 = [float(x) for x in request.data.get('origin')]
         long2, lat2 = [float(x) for x in request.data.get('dest')]
         timestart = int(request.data.get('timestart')) # epoch seconds
-        passenger_max = int(request.data.get('passengers_max'))
+        passengers_max = int(request.data.get('passengers_max'))
         if not (36.96 < lat1 < 37.017) or not (-122.087 < long1 < -121.93):
             return HttpResponse("Origin must be in SC", status=403)
         if not (36.96 < lat2 < 37.017) or not (-122.087 < long2 < -121.93):
@@ -92,11 +92,11 @@ class session_start_api_view(APIView):
         print(link)
         response = requests.get(link)
         nodes = response.json()['routes'][0]['geometry']['coordinates']
+        # timeend could be implemented in future, but not worth it because we're only operating in santa cruz
         route = [latlong_to_bucket(x[1], x[0]) for x in nodes]
-        print(route)
         data = {
             "driver": driver,
-            "passenger_max": passenger_max, 
+            "passengers_max": passengers_max, 
             "start_dest": [lat1, long1],
             "end_dest": [lat2, long2],
             "route": route,
@@ -111,25 +111,41 @@ class session_start_api_view(APIView):
             return Response(serializer.errors)
 
 
+class session_find_api_view(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request):
+        long1, lat1 = [float(x) for x in request.data.get('origin')]
+        long2, lat2 = [float(x) for x in request.data.get('dest')]
+        timestart = int(request.data.get('timestart')) # epoch seconds
+        peopleamt = int(request.data.get('people_amt'))
+        possible = Session.objects.exclude(passengers_max=0)
+        origin = latlong_to_bucket(lat1, long1)
+        possible = [x for x in possible if (timestart - 3600 < x.timestamp < timestart + 3600) and (x.passengers_max-peopleamt >=0)]
+        dest = latlong_to_bucket(lat2, long2)
+        print(possible)
+        print(origin, dest)
+        print(i.route)
+        res = []
+        for i in possible:
+            try:
+                print(i.route)
+                j = i.route.index(origin)
+                print(j)
+                if dest in i.route[j+1:]:
+                    res.append(i)
+            except ValueError:
+                pass
+        print(res)
+        return Response({"sessions": res})
+
+
+
 class session_end_api_view(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request):
         pass
 
-        
 
-def trip_create(request):
-    if request.user.is_authenticated and request.method == "POST":
-        driver = request.user
-        long1, lat1 = request.POST.get('origin')
-        long2, lat2 = request.POST.get('dest')
-        timestart = request.POST.get('timestart')
-        passenger_max = request.POST.get('passenger_max')
-        if not (36.96 < lat1 < 37.017) or not (-122.087 < long1 < -121.93):
-            return JsonResponse({"status": 400, "message": "Origin must stay in Santa Cruz area."})
-        if not (36.96 < lat2 < 37.017) or not (-122.087 < long2 < -121.93):
-            return JsonResponse({"status": 400, "message": "Destination must stay in Santa Cruz area."})
-        curtrip = Session()
         
 
 def trip_details(request):
@@ -137,13 +153,6 @@ def trip_details(request):
 
 def trip_findlocal(request):
     pass
-
-def test(request):
-    if request.method == "POST":
-        return JsonResponse({"status": 200})
-    if request.method == "GET":
-        return HttpResponse("Hello")
-
 
 
 
