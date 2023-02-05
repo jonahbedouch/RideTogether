@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
 	import X from '../icons/X.svelte';
 	import { backendStore } from '../stores/backend';
+	import { driveStore } from '../stores/drive';
 	let drive: boolean;
 
 	backendStore.subscribe((value) => {
@@ -33,6 +35,11 @@
             console.log(form, data, cancel);
             return async ({result}) => {
                 console.log(result);
+                if ('data' in result && result.data) {
+                    console.log(result.data);
+                    driveStore.replace(true, result.data.id, result.data.driver, result.data.passengers_max, result.data.start_dest, result.data.end_dest, result.data.original_route, result.data.passengers, result.data.timestamp);
+                    goto('/app/drive');
+                }
             }
         }}>
             <label for="driveOrigin">Start Destination</label>

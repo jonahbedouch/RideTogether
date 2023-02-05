@@ -25,7 +25,6 @@
 			/>
 		</div>
 		<button class="text-3xl py-5 border-t-2 border-t-oxford-blue-300"> Profile </button>
-		<button class="text-3xl py-5 border-t-2 border-t-oxford-blue-300"> History </button>
 		<button class="text-3xl py-5 border-t-2 border-t-oxford-blue-300"> Log out </button>
 	</div>
 </div>

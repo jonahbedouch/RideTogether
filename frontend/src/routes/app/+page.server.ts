@@ -3,7 +3,6 @@ import type { Actions } from "./$types";
 
 export const actions: Actions = {
     drive: async (event) => {
-        console.log("BALLS")
         const data = await event.request.formData();
         const origin = data.get('driveOrigin');
         const dest = data.get('driveDest');
@@ -32,13 +31,10 @@ export const actions: Actions = {
             }
 
             let x = await response.json();
-
-            console.log('2', x)
-
+            
             return x;
         }
         catch {
-            console.log("BALLS")
         }
     },
     ride: async (event) => {

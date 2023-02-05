@@ -22,7 +22,10 @@ export const actions: Actions = {
     
     console.log(responseData.token);
 
-    event.cookies.set('authToken', responseData.token, {path: '/'});
-    throw redirect(301, '/app')
+    if (responseData.token) {
+        event.cookies.set('authToken', responseData.token, {path: '/'});
+        throw redirect(301, '/app')
+    }
+
   }
 };
