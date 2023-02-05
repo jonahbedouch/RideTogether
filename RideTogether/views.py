@@ -178,14 +178,33 @@ class waitlist_drop_api_view(APIView):
         dropped_user_id = request.data.get("dropped_user_id")
         try:
             session = Session.objects.get(driver=driver)
-            return Response([UserSerializer(x).data for x in session.joinqueue.all()])
+            if not dropped_user_id in session.joinqueue['joinqueue']:
+                return HttpResponse(status=400)
+            session.joinqueue['joinqueue'].remove(dropped_user_id)
+            session.passengers['passengers_ids'].append(dropped_user_id)
+            session.passengers_max -=1
+            session.save()
+            return Response(PublicSessionSerializer(session).data)
         except Session.DoesNotExist:
             return HttpResponse(status=400)
 
 class session_end_api_view(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request):
-        pass
+        driver = request.user
+        try:
+            session = Session.objects.get(driver=driver)
+            passengers = session.passengers['passenger_ids']
+            session.delete()
+            driver.sessions_hosted += 1
+            driver.save()
+            for i in  passengers:
+                passenger = User.objects.get(id=i)
+                passenger.sessions_joined += 1
+                passenger.save()
+            return HttpResponse(status=200)
+        except Session.DoesNotExist:
+            return HttpResponse(status=400)
 
 
         
