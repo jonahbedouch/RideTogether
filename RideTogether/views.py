@@ -107,8 +107,9 @@ class session_start_api_view(APIView):
             "end_dest": [lat2, long2],
             "original_route": nodes,
             "route": route,
-            "passengers": [],
+            "passengers": {"passenger_ids": []},
             "timestamp": timestart,
+            "joinqueue": {"joinqueue": []}
         }
         serializer = SessionSerializer(data=data)
         if serializer.is_valid():
@@ -153,10 +154,31 @@ class session_join_api_view(APIView):
         passenger = request.user
         session_id = int(request.data.get('session_id'))
         session = Session.objects.get(id=session_id)
-        session.passengers.add(passenger)
-        session.passengers_max -= 1
-        return HttpResponse(status=200)
+        session.joinqueue['joinqueue'].append(passenger.id)
+        return Response(PublicSessionSerializer(session).data)
     
+class check_waitlist_api_view(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request):
+        # only for drivers, poll 
+        driver = request.user
+        try:
+            session = Session.objects.get(driver=driver)
+            return Response(session.joinqueue)
+        except Session.DoesNotExist:
+            return HttpResponse(status=400)
+
+class waitlist_drop_api_view(APIView):
+    ## IN PROG
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request):
+        driver = request.user
+        dropped_user_id = request.data.get("dropped_user_id")
+        try:
+            session = Session.objects.get(driver=driver)
+            return Response([UserSerializer(x).data for x in session.joinqueue.all()])
+        except Session.DoesNotExist:
+            return HttpResponse(status=400)
 
 class session_end_api_view(APIView):
     permission_classes = [permissions.IsAuthenticated]
