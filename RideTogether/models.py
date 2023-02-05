@@ -22,3 +22,6 @@ class Session(models.Model):
     timestamp = models.IntegerField()
     joinqueue = models.JSONField(null=True, blank=True)
 
+    def __str__(self):
+        return f"{self.driver}: {self.start_dest}->{self.end_dest}, {self.timestamp}"
+
