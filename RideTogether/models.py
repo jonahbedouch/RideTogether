@@ -18,7 +18,7 @@ class Session(models.Model):
     end_dest = models.JSONField()
     original_route = models.JSONField()
     route = models.JSONField()
-    passengers = models.JSONField()
+    passengers = models.JSONField(null=True, blank=True)
     timestamp = models.IntegerField()
-    joinqueue = models.JSONField()
+    joinqueue = models.JSONField(null=True, blank=True)
 
